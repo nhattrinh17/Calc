@@ -1,129 +1,129 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import './app.css';
 import Button from './components/Button/Button';
 import Header from './components/Header/Header';
 
 function App() {
-    const [calculation, setCalculation] = useState('');
-    const [numberCalcOne, setNumberCalcOne] = useState(0);
-    const [numberCalcTow, setNumberCalcTow] = useState(0);
+    const calculation = useRef(null);
+    const numberCalcOne = useRef(0);
+    const numberCalcTow = useRef(0);
     const [result, setResult] = useState(0);
-    const [msg, setMsg] = useState(null);
+    // const [msg, setMsg] = useState(null);
+
+    // console.log(numberCalcOne.current, calculation.current, numberCalcTow.current);
+
+    console.log('----render-----');
 
     const addNumber = (value) => {
-        if (!calculation) {
-            setNumberCalcOne((pre) => {
-                setMsg(null);
-                let setData;
-                if (value === '.' && pre.toString().indexOf('.') < 0) {
-                    setData = '';
-                    setData += pre + value;
-                    setResult(setData);
-                } else if (value !== '.' && pre.toString().indexOf('.') > 0) {
-                    setData = '';
-                    setData += pre + value;
-                    setResult(setData);
-                } else if (value === '.' && pre.toString().indexOf('.') > 0) {
-                    setData = pre;
-                    setResult(setData);
-                    setMsg('1 Số chỉ có 1 dấu phẩy');
-                } else {
-                    setData = pre * 10 + +value;
-                    setResult(+setData);
-                }
-                return setData;
-            });
-        } else if (calculation.length === 1) {
-            setNumberCalcTow((pre) => {
-                setMsg(null);
-                let setData;
-                if (value === '.' && pre.toString().indexOf('.') < 0) {
-                    setData = '';
-                    setData += pre + value;
-                } else if (value !== '.' && pre.toString().indexOf('.') > 0) {
-                    setData = '';
-                    setData += pre + value;
-                } else if (value === '.' && pre.toString().indexOf('.') > 0) {
-                    setData = pre;
-                    setMsg('1 Số chỉ có 1 dấu phẩy');
-                } else {
-                    setData = pre * 10 + +value;
-                }
-                return setData;
-            });
-        } else if (calculation.length === 2) {
-            calcTowNumber();
+        if (calculation.current === null) {
+            const pre = numberCalcOne.current;
+            let setData;
+            if (value === '.' && pre.toString().indexOf('.') < 0) {
+                setData = '';
+                setData += pre + value;
+            } else if (value !== '.' && pre.toString().indexOf('.') > 0) {
+                setData = '';
+                setData += pre + value;
+            } else if (value === '.' && pre.toString().indexOf('.') > 0) {
+                setData = pre;
+                // setMsg('1 Số chỉ có 1 dấu phẩy');
+            } else {
+                setData = pre * 10 + +value;
+            }
+            numberCalcOne.current = setData;
+            setResult(setData);
+        } else {
+            const pre = numberCalcTow.current;
+            let setData;
+            if (value === '.' && pre.toString().indexOf('.') < 0) {
+                setData = '';
+                setData += pre + value;
+            } else if (value !== '.' && pre.toString().indexOf('.') > 0) {
+                setData = '';
+                setData += pre + value;
+            } else if (value === '.' && pre.toString().indexOf('.') > 0) {
+                setData = pre;
+                // setMsg('1 Số chỉ có 1 dấu phẩy');
+            } else {
+                setData = pre * 10 + +value;
+            }
+            numberCalcTow.current = setData;
+            setResult(setData);
         }
+        // else if (calculation.current != null) {
+        //     calcTowNumber();
+        // }
     };
 
     const calcTowNumber = () => {
         let resultCalc = 0;
-        switch (calculation) {
+        switch (calculation.current) {
             case '+':
-                resultCalc = +numberCalcOne + +numberCalcTow;
+                resultCalc = +numberCalcOne.current + +numberCalcTow.current;
                 break;
             case '-':
-                resultCalc = numberCalcOne - numberCalcTow;
+                resultCalc = numberCalcOne.current - numberCalcTow.current;
                 break;
             case 'x':
-                resultCalc = numberCalcOne * numberCalcTow;
+                resultCalc = numberCalcOne.current * numberCalcTow.current;
                 break;
             case '/':
-                resultCalc = numberCalcOne / numberCalcTow;
+                resultCalc = numberCalcOne.current / numberCalcTow.current;
                 break;
             case '%':
-                resultCalc = numberCalcOne % numberCalcTow;
+                resultCalc = numberCalcOne.current % numberCalcTow.current;
                 break;
             default:
-                resultCalc = numberCalcOne;
+                resultCalc = numberCalcOne.current;
         }
+        resultCalc = resultCalc.toFixed(6);
         setResult(+resultCalc);
-        setNumberCalcOne(+resultCalc);
-        setNumberCalcTow(0);
-        setCalculation('');
+        numberCalcOne.current = +resultCalc;
+        numberCalcTow.current = 0;
+        calculation.current = null;
     };
 
     const addCalculation = (value) => {
-        setMsg(null);
-        if (!calculation) {
-            setCalculation(value);
+        if (calculation.current === null) {
+            // console.log('Ấn dấu');
+            calculation.current = value;
         } else {
-            setCalculation((pre) => {
-                if (
-                    (pre === '/' && value === '/' && !numberCalcTow) ||
-                    (pre === 'x' && value === 'x' && !numberCalcTow) ||
-                    (pre === '/' && value === 'x' && !numberCalcTow) ||
-                    (pre === 'x' && value === '/' && !numberCalcTow)
-                ) {
-                    setCalculation(pre);
-                    setMsg('Cú pháp không hợp lệ');
-                } else {
-                    calcTowNumber();
-                    setCalculation(value);
-                }
-            });
+            if (numberCalcTow.current) {
+                calcTowNumber();
+                calculation.current = value;
+            }
         }
     };
 
     const percentageData = () => {
-        if ((calculation === 'x' || calculation === '/') && +numberCalcTow === 0) {
-            setMsg('Cú pháp không hợp lệ');
-        } else if (calculation) {
+        if ((calculation.current === 'x' || calculation.current === '/') && +numberCalcTow === 0) {
+            // setMsg('Cú pháp không hợp lệ');
+        } else if (calculation.current !== null) {
             calcTowNumber();
-            setNumberCalcOne((pre) => pre / 100);
+            numberCalcOne.current /= 100;
             setResult((pre) => pre / 100);
         } else {
-            setNumberCalcOne((pre) => pre / 100);
+            numberCalcOne.current /= 100;
             setResult((pre) => pre / 100);
         }
     };
 
     const resetData = () => {
-        setNumberCalcOne(0);
-        setNumberCalcTow(0);
-        setCalculation('');
+        numberCalcOne.current = 0;
+        numberCalcTow.current = 0;
+        calculation.current = null;
         setResult(0);
+    };
+
+    const reverseSign = () => {
+        if (calculation.current) {
+            numberCalcTow.current *= -1;
+            setResult((pre) => pre * -1);
+        } else {
+            numberCalcOne.current *= -1;
+            setResult((pre) => pre * -1);
+        }
     };
 
     return (
@@ -134,7 +134,7 @@ function App() {
                     <div className="numbers-tools l-9 m-9 c-9">
                         <div className="tools row">
                             <Button class="l-4 m-4 c-4 tool" value="AC" handleClick={resetData} />
-                            <Button class="l-4 m-4 c-4 tool" value="+/_" />
+                            <Button class="l-4 m-4 c-4 tool" value="+/_" handleClick={reverseSign} />
                             <Button class="l-4 m-4 c-4 tool" value="%" handleClick={percentageData} />
                         </div>
                         <div className="numbers row">
@@ -159,7 +159,7 @@ function App() {
                         <Button class="l-12 m-12 c-12" value="=" handleClick={calcTowNumber} />
                     </div>
                 </div>
-                <h2 className="msg">{msg}</h2>
+                {/* <h2 className="msg">{msg}</h2> */}
             </div>
         </div>
     );
