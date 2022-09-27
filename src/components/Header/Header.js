@@ -1,12 +1,14 @@
+import { useSelector } from 'react-redux';
 import './header.css';
 
-const Header = function (props) {
-    // console.log(props);
-    // const value = props.numberOne + props.calculation;
-    // if (props.numberTow > 0) value += props.numberTow;
+const Header = function () {
+    console.log('----render Header-----');
+
+    const result = useSelector((state) => state.calc.result);
+
     return (
         <div className="wrapper">
-            <h2 className="content">{props.result}</h2>
+            <h2 className="content">{result}</h2>
         </div>
     );
 };
