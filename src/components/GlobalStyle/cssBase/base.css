@@ -1,0 +1,46 @@
+:root {
+    --calculation-color: #edbb06;
+    --number-color: #814949bd;
+    --tools-color: #24265aa1;
+}
+
+a {
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    /* 65.5%=10px */
+    font-size: 62.5%;
+    line-height: 1.6rem;
+    font-family: 'system-ui', 'Roboto', sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes moveLeftToRight {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
